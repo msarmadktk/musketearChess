@@ -276,6 +276,11 @@ inline Bitboard attacks_bb(Color c, PieceType pt, Square s, Bitboard occupied) {
   return LeaperAttacks[c][pt][s] | (PseudoAttacks[c][pt][s] & (attacks_bb<BISHOP>(s, occupied) | attacks_bb<ROOK>(s, occupied)));
 }
 
+/// attacks_from_betza() is an alias for attacks_bb() for compatibility with Betza notation pieces
+inline Bitboard attacks_from_betza(Color c, PieceType pt, Square s, Bitboard occupied) {
+  return attacks_bb(c, pt, s, occupied);
+}
+
 /// popcount() counts the number of non-zero bits in a bitboard
 
 inline int popcount(Bitboard b) {
