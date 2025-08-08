@@ -103,12 +103,10 @@ void Thread::idle_loop() {
   // some Windows NUMA hardware, for instance in fishtest. To make it simple,
   // just check if running threads are below a threshold, in this case all this
   // NUMA machinery is not needed.
-  std::cout << "DEBUG: About to check Options[\"Threads\"] in idle_loop for thread " << idx << std::endl;
-  if (Options["Threads"] >= 8) {
-      std::cout << "DEBUG: Calling WinProcGroup::bindThisThread for thread " << idx << std::endl;
-      WinProcGroup::bindThisThread(idx);
-  }
-  std::cout << "DEBUG: Thread binding check completed for thread " << idx << std::endl;
+  std::cout << "DEBUG: Skipping thread binding during initialization for thread " << idx << std::endl;
+  
+  // Skip thread binding during initialization to avoid concurrent Options access
+  // Thread binding will be handled later if needed
 
   while (true)
   {
