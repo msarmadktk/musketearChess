@@ -266,12 +266,21 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
   // Black gating pieces in XBoard format
   if (xboard)
   {
+      Gate currentGate = NO_GATE;
       for (Square s = SQ_A8; (ss >> token) && token != '/' && s <= SQ_H8; s++)
       {
           if ((idx = PieceToChar.find(token)) != string::npos)
           {
-              set_gating_type(type_of(Piece(idx)));
-              put_gating_piece(BLACK, s);
+              PieceType pt = type_of(Piece(idx));
+              // Set gating type for this specific gate position
+              if (currentGate < MAX_GATES)
+              {
+                  currentGate = Gate(currentGate + 1);
+                  if (gateCount < currentGate)
+                      gateCount = currentGate;
+                  gatingPieces[currentGate] = pt;
+                  put_gating_piece(BLACK, s);
+              }
           }
       }
   }
@@ -298,31 +307,21 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
   // White gating pieces in XBoard format
   if (xboard)
   {
-      Square gatingPositions[MAX_GATES];
-      std::fill_n(gatingPositions, MAX_GATES, SQ_NONE);
-      
       for (Square s = SQ_A1; (ss >> token) && !isspace(token) && s <= SQ_H1; s++)
       {
           if ((idx = PieceToChar.find(token)) != string::npos)
           {
               PieceType pt = type_of(Piece(idx));
               // Find which gate this piece type corresponds to
-              for (Gate g = GATE_1; g < GATE_NB; ++g)
+              for (Gate g = GATE_1; g <= gateCount; ++g)
               {
                   if (pt == gating_piece(g))
                   {
-                      gatingPositions[g - 1] = s;  // g-1 because GATE_1 is index 1
+                      put_gating_piece(WHITE, s);
                       break;
                   }
               }
           }
-      }
-      
-      // Place all found gating pieces
-      for (int i = 0; i < MAX_GATES; ++i)
-      {
-          if (gatingPositions[i] != SQ_NONE)
-              put_gating_piece(WHITE, gatingPositions[i]);
       }
   }
   // Gating pieces
