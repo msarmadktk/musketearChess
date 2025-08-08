@@ -182,12 +182,19 @@ namespace {
   // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
+  // Only evaluate threats for original piece types, others default to 0
   constexpr Score ThreatByMinor[PIECE_TYPE_NB] = {
-    S(0, 0), S(0, 31), S(39, 42), S(57, 44), S(68, 112), S(47, 120)
+    S(0, 0), S(0, 31), S(39, 42), S(57, 44), S(68, 112), S(47, 120),  // Original pieces
+    S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0),  // Fairy pieces
+    S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0),  // Padding to 32
+    S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0)
   };
 
   constexpr Score ThreatByRook[PIECE_TYPE_NB] = {
-    S(0, 0), S(0, 24), S(38, 71), S(38, 61), S(0, 38), S(36, 38)
+    S(0, 0), S(0, 24), S(38, 71), S(38, 61), S(0, 38), S(36, 38),  // Original pieces
+    S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0),  // Fairy pieces
+    S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0),  // Padding to 32
+    S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0)
   };
 
   // ThreatByKing[on one/on many] contains bonuses for king attacks on
