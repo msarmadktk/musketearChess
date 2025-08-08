@@ -20,7 +20,6 @@
 
 #include <algorithm> // For std::count
 #include <cassert>
-#include <iostream>
 
 #include "movegen.h"
 #include "search.h"
@@ -37,9 +36,7 @@ ThreadPool Threads; // Global object
 
 Thread::Thread(size_t n) : idx(n), stdThread(&Thread::idle_loop, this) {
 
-  std::cout << "DEBUG: Thread constructor called for idx = " << n << std::endl;
   wait_for_search_finished();
-  std::cout << "DEBUG: Thread constructor completed for idx = " << n << std::endl;
 }
 
 
@@ -96,17 +93,13 @@ void Thread::wait_for_search_finished() {
 
 void Thread::idle_loop() {
 
-  std::cout << "DEBUG: idle_loop() started for thread idx = " << idx << std::endl;
-
   // If OS already scheduled us on a different group than 0 then don't overwrite
   // the choice, eventually we are one of many one-threaded processes running on
   // some Windows NUMA hardware, for instance in fishtest. To make it simple,
   // just check if running threads are below a threshold, in this case all this
   // NUMA machinery is not needed.
-  std::cout << "DEBUG: Skipping thread binding during initialization for thread " << idx << std::endl;
-  
-  // Skip thread binding during initialization to avoid concurrent Options access
-  // Thread binding will be handled later if needed
+  if (Options["Threads"] >= 8)
+      WinProcGroup::bindThisThread(idx);
 
   while (true)
   {
@@ -130,37 +123,23 @@ void Thread::idle_loop() {
 
 void ThreadPool::set(size_t requested) {
 
-  std::cout << "DEBUG: ThreadPool::set() called with requested = " << requested << std::endl;
-
   if (size() > 0) { // destroy any existing thread(s)
-      std::cout << "DEBUG: Destroying existing threads, current size = " << size() << std::endl;
       main()->wait_for_search_finished();
 
       while (size() > 0)
           delete back(), pop_back();
-      std::cout << "DEBUG: All existing threads destroyed" << std::endl;
   }
 
   if (requested > 0) { // create new thread(s)
-      std::cout << "DEBUG: Creating new threads, requested = " << requested << std::endl;
-      std::cout << "DEBUG: About to create MainThread(0)" << std::endl;
       push_back(new MainThread(0));
-      std::cout << "DEBUG: MainThread(0) created successfully" << std::endl;
 
-      while (size() < requested) {
-          std::cout << "DEBUG: About to create Thread(" << size() << ")" << std::endl;
+      while (size() < requested)
           push_back(new Thread(size()));
-          std::cout << "DEBUG: Thread(" << (size()-1) << ") created successfully" << std::endl;
-      }
-      std::cout << "DEBUG: About to call clear()" << std::endl;
       clear();
-      std::cout << "DEBUG: clear() completed" << std::endl;
   }
 
   // Reallocate the hash with the new threadpool size
-  std::cout << "DEBUG: About to call TT.resize()" << std::endl;
   TT.resize(Options["Hash"]);
-  std::cout << "DEBUG: TT.resize() completed" << std::endl;
 }
 
 /// ThreadPool::clear() sets threadPool data to initial values.

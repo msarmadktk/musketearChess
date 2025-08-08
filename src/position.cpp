@@ -23,7 +23,6 @@
 #include <cstddef> // For offsetof()
 #include <cstring> // For std::memset, std::memcmp
 #include <iomanip>
-#include <iostream>
 #include <sstream>
 
 #include "bitboard.h"
@@ -33,21 +32,9 @@
 #include "thread.h"
 #include "tt.h"
 #include "uci.h"
-
 #include "syzygy/tbprobe.h"
 
 using std::string;
-
-// Define PieceToChar string to avoid static initialization order issues - must be exactly 64 characters
-const std::string PieceToChar = " PNBRQCLAMSDUHEFK               pnbrqclamsduhefk                ";
-
-// Debug PieceToChar initialization
-struct PieceToCharDebug {
-  PieceToCharDebug() {
-    std::cout << "DEBUG: PieceToChar initialized, length = " << PieceToChar.length() << std::endl;
-  }
-};
-PieceToCharDebug piece_debug;
 
 namespace PSQT {
   extern Score psq[PIECE_NB][SQUARE_NB];
@@ -262,7 +249,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
 
   unsigned char col, row, token;
   size_t idx;
-  Square sq;
+  Square sq = SQ_A8;
   std::istringstream ss(fenStr);
 
   std::memset(this, 0, sizeof(Position));
@@ -272,28 +259,17 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
 
   ss >> std::noskipws;
 
-  // Detect FEN format - XBoard format has * characters OR starts with pocket pieces
-  bool xboard = ss.str().find('*') != std::string::npos || 
-                (ss.str().length() > 0 && PieceToChar.find(ss.str()[0]) != std::string::npos && 
-                 ss.str().find('/') < 10); // Pocket pieces at start
+  // Detect FEN format
+  bool xboard = ss.str().find('*') != std::string::npos;
 
   // 1. Piece placement
-  // Initialize square position for board parsing
-  sq = SQ_A8;
-
   // Black gating pieces in XBoard format
   if (xboard)
   {
       Gate currentGate = NO_GATE;
-      // Parse pocket pieces until we hit '/'
-      while ((ss >> token) && token != '/')
+      for (Square s = SQ_A8; (ss >> token) && token != '/' && s <= SQ_H8; s++)
       {
-          if (token == '*')
-          {
-              // Skip empty pocket position
-              continue;
-          }
-          else if ((idx = PieceToChar.find(token)) != string::npos)
+          if ((idx = PieceToChar.find(token)) != string::npos)
           {
               PieceType pt = type_of(Piece(idx));
               // Set gating type for this specific gate position
@@ -303,11 +279,10 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
                   if (gateCount < currentGate)
                       gateCount = currentGate;
                   gatingPieces[currentGate] = pt;
-                  put_gating_piece(BLACK, Square(SQ_A8 + currentGate - 1)); // Place on back rank
+                  put_gating_piece(BLACK, s);
               }
           }
       }
-      // After parsing pocket pieces, continue with board parsing
   }
 
   while ((ss >> token) && !isspace(token) && token != '[')
