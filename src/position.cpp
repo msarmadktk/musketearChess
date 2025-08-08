@@ -32,9 +32,13 @@
 #include "thread.h"
 #include "tt.h"
 #include "uci.h"
+
 #include "syzygy/tbprobe.h"
 
 using std::string;
+
+// Define PieceToChar string to avoid static initialization order issues
+const std::string PieceToChar = " PNBRQCLAMSDUHEFK               pnbrqclamsduhefk               ";
 
 namespace PSQT {
   extern Score psq[PIECE_NB][SQUARE_NB];

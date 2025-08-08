@@ -240,8 +240,8 @@ enum Piece {
   PIECE_NB = 2 * PIECE_TYPE_NB
 };
 
-const std::string PieceToChar(  " PNBRQCLAMSDUHEFK" + std::string(PIECE_TYPE_NB - KING - 1, ' ')
-                              + " pnbrqclamsduhefk" + std::string(PIECE_TYPE_NB - KING - 1, ' '));
+// PieceToChar string for piece-to-character mapping
+extern const std::string PieceToChar;
 
 extern Value PieceValue[PHASE_NB][PIECE_NB];
 
