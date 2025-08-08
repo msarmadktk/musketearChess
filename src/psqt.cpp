@@ -22,9 +22,36 @@
 
 #include "types.h"
 
+// Initialize PieceValue array with proper size for all pieces (PIECE_NB = 64)
 Value PieceValue[PHASE_NB][PIECE_NB] = {
-  { VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg, CannonValueMg, LeopardValueMg, ArchbishopValueMg, ChancellorValueMg, SpiderValueMg, DragonValueMg, UnicornValueMg, HawkValueMg, ElephantValueMg, FortressValueMg },
-  { VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg, CannonValueEg, LeopardValueEg, ArchbishopValueEg, ChancellorValueEg, SpiderValueEg, DragonValueEg, UnicornValueEg, HawkValueEg, ElephantValueEg, FortressValueEg }
+  // Middlegame values
+  { 
+    VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg, 
+    CannonValueMg, LeopardValueMg, ArchbishopValueMg, ChancellorValueMg, SpiderValueMg, 
+    DragonValueMg, UnicornValueMg, HawkValueMg, ElephantValueMg, FortressValueMg, VALUE_ZERO,
+    // Padding for remaining white pieces (17-31)
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO,
+    // Black pieces (32-63) - will be set in init()
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO
+  },
+  // Endgame values
+  {
+    VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg,
+    CannonValueEg, LeopardValueEg, ArchbishopValueEg, ChancellorValueEg, SpiderValueEg,
+    DragonValueEg, UnicornValueEg, HawkValueEg, ElephantValueEg, FortressValueEg, VALUE_ZERO,
+    // Padding for remaining white pieces (17-31)
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO,
+    // Black pieces (32-63) - will be set in init()
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO, VALUE_ZERO
+  }
 };
 
 namespace PSQT {

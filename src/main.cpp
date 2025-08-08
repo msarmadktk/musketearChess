@@ -34,9 +34,10 @@ namespace PSQT {
 
 int main(int argc, char* argv[]) {
 
+  UCI::init(Options);
+  
   std::cout << engine_info() << std::endl;
 
-  UCI::init(Options);
   PSQT::init();
   Bitboards::init();
   Position::init();
