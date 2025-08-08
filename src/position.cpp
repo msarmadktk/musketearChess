@@ -38,8 +38,8 @@
 
 using std::string;
 
-// Define PieceToChar string to avoid static initialization order issues
-const std::string PieceToChar = " PNBRQCLAMSDUHEFK               pnbrqclamsduhefk               ";
+// Define PieceToChar string to avoid static initialization order issues - must be exactly 64 characters
+const std::string PieceToChar = " PNBRQCLAMSDUHEFK               pnbrqclamsduhefk                ";
 
 // Debug PieceToChar initialization
 struct PieceToCharDebug {
