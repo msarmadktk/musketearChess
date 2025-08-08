@@ -249,7 +249,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
 
   unsigned char col, row, token;
   size_t idx;
-  Square sq = SQ_A8;
+  Square sq;
   std::istringstream ss(fenStr);
 
   std::memset(this, 0, sizeof(Position));
@@ -259,17 +259,28 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
 
   ss >> std::noskipws;
 
-  // Detect FEN format
-  bool xboard = ss.str().find('*') != std::string::npos;
+  // Detect FEN format - XBoard format has * characters OR starts with pocket pieces
+  bool xboard = ss.str().find('*') != std::string::npos || 
+                (ss.str().length() > 0 && PieceToChar.find(ss.str()[0]) != std::string::npos && 
+                 ss.str().find('/') < 10); // Pocket pieces at start
 
   // 1. Piece placement
+  // Initialize square position for board parsing
+  sq = SQ_A8;
+
   // Black gating pieces in XBoard format
   if (xboard)
   {
       Gate currentGate = NO_GATE;
-      for (Square s = SQ_A8; (ss >> token) && token != '/' && s <= SQ_H8; s++)
+      // Parse pocket pieces until we hit '/'
+      while ((ss >> token) && token != '/')
       {
-          if ((idx = PieceToChar.find(token)) != string::npos)
+          if (token == '*')
+          {
+              // Skip empty pocket position
+              continue;
+          }
+          else if ((idx = PieceToChar.find(token)) != string::npos)
           {
               PieceType pt = type_of(Piece(idx));
               // Set gating type for this specific gate position
@@ -279,10 +290,11 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
                   if (gateCount < currentGate)
                       gateCount = currentGate;
                   gatingPieces[currentGate] = pt;
-                  put_gating_piece(BLACK, s);
+                  put_gating_piece(BLACK, SQ_A8 + currentGate - 1); // Place on back rank
               }
           }
       }
+      // After parsing pocket pieces, continue with board parsing
   }
 
   while ((ss >> token) && !isspace(token) && token != '[')
