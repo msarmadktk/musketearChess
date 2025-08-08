@@ -44,6 +44,10 @@ void on_logger(const Option& o) { start_logger(o); }
 void on_threads(const Option& o) { Threads.set(o); }
 void on_tb_path(const Option& o) { Tablebases::init(o); }
 void on_variant(const Option& o) {
+    // Only execute if Options is fully initialized and Protocol is set
+    if (Options.count("Protocol") == 0)
+        return;
+        
     if (Options["Protocol"] == "xboard")
     {
         // Send setup command
