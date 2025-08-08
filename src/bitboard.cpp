@@ -144,7 +144,8 @@ void Bitboards::init() {
   init_magics(RookTable, RookMagics, RookDirections);
   init_magics(BishopTable, BishopMagics, BishopDirections);
 
-  int steps[][17] = {
+  // Ensure array is sized for PIECE_TYPE_NB to prevent undefined behavior
+  int steps[PIECE_TYPE_NB][17] = {
     {}, // NO_PIECE_TYPE
     { 7, 9 }, // Pawn
     { -17, -15, -10, -6, 6, 10, 15, 17 }, // Knight
@@ -167,9 +168,11 @@ void Bitboards::init() {
        18,  16,  14,  9,  8,  7,  2,  1 }, // Elephant
     { -17, -16, -15, -2,
        17,  16,  15,  2 }, // Fortress
-    { -9, -8, -7, -1, 1, 7, 8, 9 } // King
+    { -9, -8, -7, -1, 1, 7, 8, 9 }, // King
+    // Padding empty entries for unused piece type slots
+    {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} 
   };
-  Direction slider[][9] = {
+  Direction slider[PIECE_TYPE_NB][9] = {
     {}, // NO_PIECE_TYPE
     {}, // Pawn
     {}, // Knight
@@ -186,9 +189,11 @@ void Bitboards::init() {
     {}, // Hawk
     {}, // Elephant
     { NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST }, // Fortress
-    {} // King
+    {}, // King
+    // Padding empty entries for unused piece type slots
+    {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
   };
-  int slider_dist[] = {
+  int slider_dist[PIECE_TYPE_NB] = {
     0, // NO_PIECE_TYPE
     0, // Pawn
     0, // Knight
@@ -205,7 +210,9 @@ void Bitboards::init() {
     0, // Hawk
     0, // Elephant
     3, // Fortress
-    0  // King
+    0, // King
+    // Padding zeros for unused piece type slots
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
   };
 
   for (Color c = WHITE; c <= BLACK; ++c)

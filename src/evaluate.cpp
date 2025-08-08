@@ -89,7 +89,11 @@ namespace {
   constexpr Value SpaceThreshold = Value(12222);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
-  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 77, 55, 44, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10 };
+  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 
+    0, 0, 77, 55, 44, 10,  // Original pieces: NO_PIECE_TYPE, PAWN, KNIGHT, BISHOP, ROOK, QUEEN
+    10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,  // Fairy pieces: CANNON through KING
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  // Padding to reach PIECE_TYPE_NB (32)
+  };
 
   // Penalties for enemy's safe checks
   constexpr int QueenSafeCheck  = 780;
@@ -216,7 +220,11 @@ namespace {
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 6, 12, 21 };
 
   // KingProtector[PieceType-2] contains a penalty according to distance from king
-  constexpr Score KingProtector[PIECE_TYPE_NB - 2] = { S(3, 5), S(4, 3), S(3, 0), S(1, -1) };
+  constexpr Score KingProtector[PIECE_TYPE_NB - 2] = { 
+    S(3, 5), S(4, 3), S(3, 0), S(1, -1),  // Original pieces (Knight, Bishop, Rook, Queen)
+    S(1, -1), S(1, -1), S(1, -1), S(1, -1), S(1, -1), S(1, -1), S(1, -1), S(1, -1), S(1, -1), S(1, -1), S(1, -1),  // Fairy pieces
+    S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0)  // Padding
+  };
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  5);
