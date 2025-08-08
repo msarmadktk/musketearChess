@@ -195,6 +195,14 @@ private:
   void move_piece(Piece pc, Square from, Square to);
   template<bool Do>
   void do_castling(Color us, Square from, Square& to, Square& rfrom, Square& rto, Key& k);
+  
+  // Custom piece management
+  void add_custom_piece(Color c, const std::string& name, const std::string& betzaNotation);
+  void clear_custom_pieces(Color c);
+  void set_asymmetric_pieces(bool asymmetric);
+  bool has_asymmetric_pieces() const;
+  const std::vector<std::string>& get_custom_piece_names(Color c) const;
+  const std::vector<std::string>& get_custom_piece_betza(Color c) const;
 
   // Data members
   Piece board[SQUARE_NB];
@@ -217,6 +225,11 @@ private:
   Thread* thisThread;
   StateInfo* st;
   bool chess960;
+  
+  // Dynamic piece management
+  std::vector<std::string> customPieceNames[COLOR_NB];
+  std::vector<std::string> customPieceBetza[COLOR_NB];
+  bool asymmetricPieces = false;
 };
 
 extern std::ostream& operator<<(std::ostream& os, const Position& pos);

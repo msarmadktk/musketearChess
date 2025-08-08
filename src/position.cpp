@@ -24,6 +24,7 @@
 #include <cstring> // For std::memset, std::memcmp
 #include <iomanip>
 #include <sstream>
+#include <vector>
 
 #include "bitboard.h"
 #include "misc.h"
@@ -33,6 +34,7 @@
 #include "tt.h"
 #include "uci.h"
 #include "syzygy/tbprobe.h"
+#include "betza.h"
 
 using std::string;
 
@@ -313,7 +315,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
           {
               PieceType pt = type_of(Piece(idx));
               // Find which gate this piece type corresponds to
-              for (Gate g = GATE_1; g <= gateCount; ++g)
+              for (Gate g = WHITE_GATE_1; g <= gateCount; ++g)
               {
                   if (pt == gating_piece(g))
                   {
@@ -482,11 +484,11 @@ void Position::set_state(StateInfo* si) const {
       si->psq += PSQT::psq[pc][s];
   }
 
-  for (Gate g = GATE_1; g <= gate_count(); g++)
+      for (Gate g = WHITE_GATE_1; g <= gate_count(); g++)
       si->key ^= Zobrist::inhand[gating_piece(g)][g];
 
   for (Color c = WHITE; c <= BLACK; ++c)
-      for (Gate g = GATE_1; g <= setup_count(c); g++)
+      for (Gate g = WHITE_GATE_1; g <= setup_count(c); g++)
       {
           Square s = gating_square(c, g);
           if (s != SQ_NONE)
@@ -576,7 +578,7 @@ const string Position::fen() const {
   {
       ss << '[';
       for (Color c = WHITE; c <= BLACK; ++c)
-          for (Gate i = GATE_1; i <= gateCount; i++)
+          for (Gate i = WHITE_GATE_1; i <= gateCount; i++)
               ss << std::string{PieceToChar[make_piece(c, gating_piece(i))],
                                   setupCount[c] < i              ? '?'
                                 : gating_square(c, i) != SQ_NONE ? char('a' + file_of(gating_square(c, i)))
@@ -1572,4 +1574,34 @@ bool Position::pos_is_ok() const {
       }
 
   return true;
+}
+
+// Custom piece management functions
+void Position::add_custom_piece(Color c, const std::string& name, const std::string& betzaNotation) {
+    customPieceNames[c].push_back(name);
+    customPieceBetza[c].push_back(betzaNotation);
+    
+    // Add to Betza manager
+    Betza::betzaManager.addPiece(name, betzaNotation);
+}
+
+void Position::clear_custom_pieces(Color c) {
+    customPieceNames[c].clear();
+    customPieceBetza[c].clear();
+}
+
+void Position::set_asymmetric_pieces(bool asymmetric) {
+    asymmetricPieces = asymmetric;
+}
+
+bool Position::has_asymmetric_pieces() const {
+    return asymmetricPieces;
+}
+
+const std::vector<std::string>& Position::get_custom_piece_names(Color c) const {
+    return customPieceNames[c];
+}
+
+const std::vector<std::string>& Position::get_custom_piece_betza(Color c) const {
+    return customPieceBetza[c];
 }

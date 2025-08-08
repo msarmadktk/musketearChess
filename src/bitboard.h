@@ -24,6 +24,7 @@
 #include <string>
 
 #include "types.h"
+#include "betza.h"
 
 namespace Bitbases {
 
@@ -276,8 +277,14 @@ inline Bitboard attacks_bb(Color c, PieceType pt, Square s, Bitboard occupied) {
   return LeaperAttacks[c][pt][s] | (PseudoAttacks[c][pt][s] & (attacks_bb<BISHOP>(s, occupied) | attacks_bb<ROOK>(s, occupied)));
 }
 
-/// attacks_from_betza() is an alias for attacks_bb() for compatibility with Betza notation pieces
+/// attacks_from_betza() uses dynamic Betza notation for piece movement
 inline Bitboard attacks_from_betza(Color c, PieceType pt, Square s, Bitboard occupied) {
+  // Try to get piece from Betza manager first
+  Betza::BetzaPiece* piece = Betza::betzaManager.getPiece(pt);
+  if (piece) {
+    return Betza::betzaManager.generateAttacks(c, *piece, s, occupied);
+  }
+  // Fallback to standard attacks_bb
   return attacks_bb(c, pt, s, occupied);
 }
 

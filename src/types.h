@@ -216,11 +216,16 @@ enum Value : int {
   MidgameLimit  = 15258, EndgameLimit  = 3915
 };
 
-const int PIECE_TYPE_BITS = 5; // PIECE_TYPE_NB = pow(2, PIECE_TYPE_BITS)
-const int MAX_GATES = 10;  // Increased from 2 to allow more fairy pieces
+const int PIECE_TYPE_BITS = 6; // Increased to support more piece types
+const int MAX_GATES = 14;  // Support up to 7 extra pieces per side (7 white + 7 black)
+const int MAX_PIECES_PER_SIDE = 7; // Maximum extra pieces per side
 
 enum Gate {
-  NO_GATE, GATE_1, GATE_2, GATE_3, GATE_4, GATE_5, GATE_6, GATE_7, GATE_8, GATE_9, GATE_10,
+  NO_GATE, 
+  // White gates
+  WHITE_GATE_1, WHITE_GATE_2, WHITE_GATE_3, WHITE_GATE_4, WHITE_GATE_5, WHITE_GATE_6, WHITE_GATE_7,
+  // Black gates  
+  BLACK_GATE_1, BLACK_GATE_2, BLACK_GATE_3, BLACK_GATE_4, BLACK_GATE_5, BLACK_GATE_6, BLACK_GATE_7,
   GATE_NB = MAX_GATES + 1
 };
 
@@ -228,6 +233,14 @@ enum PieceType {
   NO_PIECE_TYPE, PAWN, KNIGHT, BISHOP, ROOK, QUEEN,
   CANNON, LEOPARD, ARCHBISHOP, CHANCELLOR, SPIDER,
   DRAGON, UNICORN, HAWK, ELEPHANT, FORTRESS, KING,
+  // Additional piece types for asymmetric play
+  CUSTOM_1, CUSTOM_2, CUSTOM_3, CUSTOM_4, CUSTOM_5, CUSTOM_6, CUSTOM_7,
+  CUSTOM_8, CUSTOM_9, CUSTOM_10, CUSTOM_11, CUSTOM_12, CUSTOM_13, CUSTOM_14,
+  CUSTOM_15, CUSTOM_16, CUSTOM_17, CUSTOM_18, CUSTOM_19, CUSTOM_20,
+  CUSTOM_21, CUSTOM_22, CUSTOM_23, CUSTOM_24, CUSTOM_25, CUSTOM_26, CUSTOM_27,
+  CUSTOM_28, CUSTOM_29, CUSTOM_30, CUSTOM_31, CUSTOM_32, CUSTOM_33, CUSTOM_34,
+  CUSTOM_35, CUSTOM_36, CUSTOM_37, CUSTOM_38, CUSTOM_39, CUSTOM_40,
+  CUSTOM_41, CUSTOM_42, CUSTOM_43, CUSTOM_44, CUSTOM_45, CUSTOM_46, CUSTOM_47,
   ALL_PIECES = 0,
 
   PIECE_TYPE_NB = 1 << PIECE_TYPE_BITS
@@ -240,8 +253,8 @@ enum Piece {
   PIECE_NB = 2 * PIECE_TYPE_NB
 };
 
-const std::string PieceToChar(  " PNBRQCLAMSDUHEFK" + std::string(PIECE_TYPE_NB - KING - 1, ' ')
-                              + " pnbrqclamsduhefk" + std::string(PIECE_TYPE_NB - KING - 1, ' '));
+const std::string PieceToChar(  " PNBRQCLAMSDUHEFK" + std::string(PIECE_TYPE_NB - KING - 1, 'X')
+                              + " pnbrqclamsduhefk" + std::string(PIECE_TYPE_NB - KING - 1, 'x'));
 
 extern Value PieceValue[PHASE_NB][PIECE_NB];
 

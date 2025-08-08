@@ -80,7 +80,7 @@ namespace {
         *moveList++ = make<T>(to - D, to, ROOK);
         *moveList++ = make<T>(to - D, to, BISHOP);
         *moveList++ = make<T>(to - D, to, KNIGHT);
-       for (Gate g = GATE_1; g < GATE_NB; g++)
+       for (Gate g = WHITE_GATE_1; g < GATE_NB; g++)
             *moveList++ = make<T>(to - D, to, pos.gating_piece(g));
     }
 

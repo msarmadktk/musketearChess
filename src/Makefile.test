@@ -1,0 +1,50 @@
+# Test Makefile for Dynamic Betza Notation System
+
+CXX = g++
+CXXFLAGS = -std=c++11 -O2 -Wall -Wextra
+INCLUDES = -I.
+
+# Source files for the test
+TEST_SOURCES = test_betza.cpp betza.cpp bitboard.cpp
+TEST_OBJECTS = $(TEST_SOURCES:.cpp=.o)
+
+# Main engine sources (for linking)
+ENGINE_SOURCES = types.h bitboard.h
+
+# Test executable
+TEST_EXE = test_betza
+
+# Default target
+all: $(TEST_EXE)
+
+# Build test executable
+$(TEST_EXE): $(TEST_OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+# Compile test source files
+test_betza.o: test_betza.cpp betza.h types.h bitboard.h
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+betza.o: betza.cpp betza.h types.h bitboard.h
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+bitboard.o: bitboard.cpp bitboard.h types.h
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+# Run tests
+test: $(TEST_EXE)
+	./$(TEST_EXE)
+
+# Clean build files
+clean:
+	rm -f $(TEST_OBJECTS) $(TEST_EXE)
+
+# Show help
+help:
+	@echo "Available targets:"
+	@echo "  all     - Build the test executable"
+	@echo "  test    - Build and run the tests"
+	@echo "  clean   - Remove build files"
+	@echo "  help    - Show this help message"
+
+.PHONY: all test clean help

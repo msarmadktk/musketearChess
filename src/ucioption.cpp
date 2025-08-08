@@ -22,6 +22,7 @@
 #include <cassert>
 #include <ostream>
 #include <iostream>
+#include <sstream>
 
 #include "misc.h"
 #include "search.h"
@@ -30,6 +31,7 @@
 #include "uci.h"
 #include "xboard.h"
 #include "syzygy/tbprobe.h"
+#include "betza.h"
 
 using std::string;
 
@@ -51,19 +53,19 @@ void on_variant(const Option& o) {
                   << "8x10+0_seirawan"
                   << " " << XBoard::StartFEN
                   << sync_endl;
-        // Send piece commands with Betza notation
+        
+        // Initialize Betza manager
+        Betza::betzaManager.init();
+        
+        // Send piece commands with dynamic Betza notation
         // https://www.gnu.org/software/xboard/Betza.html
-        sync_cout << "piece L& NB2" << sync_endl;
-        sync_cout << "piece C& llNrrNDK" << sync_endl;
-        sync_cout << "piece E& KDA" << sync_endl;
-        sync_cout << "piece U& CN" << sync_endl;
-        sync_cout << "piece S& B2DN" << sync_endl;
-        sync_cout << "piece D& QN" << sync_endl;
-        sync_cout << "piece F& B3DfNbN" << sync_endl;
-        sync_cout << "piece M& NR" << sync_endl;
-        sync_cout << "piece A& NB" << sync_endl;
-        sync_cout << "piece H& DHAG" << sync_endl;
-        sync_cout << "piece K& KisO2" << sync_endl;
+        const auto& pieces = Betza::betzaManager.getAllPieces();
+        for (const auto& pair : pieces) {
+            const auto& piece = pair.second;
+            if (!piece.moves.empty()) {
+                sync_cout << "piece " << piece.symbol << "& " << piece.moves[0].notation << sync_endl;
+            }
+        }
     }
     else
         sync_cout << "info string variant " << (std::string)o
@@ -73,6 +75,47 @@ void on_variant(const Option& o) {
                   << " template " << "seirawan"
                   << " startpos " << XBoard::StartFEN
                   << sync_endl;
+}
+
+void on_custom_pieces(const Option& o) {
+    // Clear existing custom pieces
+    Betza::betzaManager.clearCustomPieces();
+    
+    std::string pieceString = (std::string)o;
+    if (pieceString.empty() || pieceString == "<empty>") {
+        sync_cout << "info string Custom pieces cleared" << sync_endl;
+        return;
+    }
+    
+    // Parse custom piece definitions
+    // Format: "Name1:Betza1,Name2:Betza2,..."
+    std::istringstream iss(pieceString);
+    std::string pieceDef;
+    int pieceCount = 0;
+    
+    while (std::getline(iss, pieceDef, ',')) {
+        size_t colonPos = pieceDef.find(':');
+        if (colonPos != std::string::npos) {
+            std::string name = pieceDef.substr(0, colonPos);
+            std::string betza = pieceDef.substr(colonPos + 1);
+            
+            // Trim whitespace
+            name.erase(0, name.find_first_not_of(" \t"));
+            name.erase(name.find_last_not_of(" \t") + 1);
+            betza.erase(0, betza.find_first_not_of(" \t"));
+            betza.erase(betza.find_last_not_of(" \t") + 1);
+            
+            if (!name.empty() && !betza.empty()) {
+                Betza::betzaManager.addPiece(name, betza);
+                pieceCount++;
+                sync_cout << "info string Added custom piece: " << name << " (" << betza << ")" << sync_endl;
+            }
+        }
+    }
+    
+    if (pieceCount > 0) {
+        sync_cout << "info string Loaded " << pieceCount << " custom pieces" << sync_endl;
+    }
 }
 
 
@@ -108,6 +151,7 @@ void init(OptionsMap& o) {
   o["UCI_Variant"]           << Option("musketeer", {"musketeer"}, on_variant);
   o["UCI_Chess960"]          << Option(false);
   o["UCI_AnalyseMode"]       << Option(false);
+  o["CustomPieces"]          << Option("<empty>", on_custom_pieces);
   o["SyzygyPath"]            << Option("<empty>", on_tb_path);
   o["SyzygyProbeDepth"]      << Option(1, 1, 100);
   o["Syzygy50MoveRule"]      << Option(true);
