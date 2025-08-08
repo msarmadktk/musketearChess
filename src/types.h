@@ -217,10 +217,10 @@ enum Value : int {
 };
 
 const int PIECE_TYPE_BITS = 5; // PIECE_TYPE_NB = pow(2, PIECE_TYPE_BITS)
-const int MAX_GATES = 2;
+const int MAX_GATES = 10;  // Increased from 2 to allow more fairy pieces
 
 enum Gate {
-  NO_GATE, GATE_1, GATE_2,
+  NO_GATE, GATE_1, GATE_2, GATE_3, GATE_4, GATE_5, GATE_6, GATE_7, GATE_8, GATE_9, GATE_10,
   GATE_NB = MAX_GATES + 1
 };
 
