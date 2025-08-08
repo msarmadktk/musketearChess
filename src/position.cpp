@@ -290,7 +290,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
                   if (gateCount < currentGate)
                       gateCount = currentGate;
                   gatingPieces[currentGate] = pt;
-                  put_gating_piece(BLACK, SQ_A8 + currentGate - 1); // Place on back rank
+                  put_gating_piece(BLACK, Square(SQ_A8 + currentGate - 1)); // Place on back rank
               }
           }
       }
