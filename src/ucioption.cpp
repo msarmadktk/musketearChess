@@ -35,6 +35,14 @@ using std::string;
 
 UCI::OptionsMap Options; // Global object
 
+// Debug Options initialization
+struct OptionsDebug {
+  OptionsDebug() {
+    std::cout << "DEBUG: Options global object constructed" << std::endl;
+  }
+};
+OptionsDebug options_debug;
+
 namespace UCI {
 
 /// 'On change' actions, triggered by an option's value change
@@ -44,9 +52,13 @@ void on_logger(const Option& o) { start_logger(o); }
 void on_threads(const Option& o) { Threads.set(o); }
 void on_tb_path(const Option& o) { Tablebases::init(o); }
 void on_variant(const Option& o) {
+    std::cout << "DEBUG: on_variant() called" << std::endl;
     // Only execute if Options is fully initialized and Protocol is set
-    if (Options.count("Protocol") == 0)
+    if (Options.count("Protocol") == 0) {
+        std::cout << "DEBUG: on_variant() - Protocol not set, returning early" << std::endl;
         return;
+    }
+    std::cout << "DEBUG: on_variant() - Protocol is set, continuing" << std::endl;
         
     if (Options["Protocol"] == "xboard")
     {
@@ -92,30 +104,55 @@ bool CaseInsensitiveLess::operator() (const string& s1, const string& s2) const 
 
 void init(OptionsMap& o) {
 
+  std::cout << "DEBUG: UCI::init() starting" << std::endl;
+
   // at most 2^32 clusters.
   constexpr int MaxHashMB = Is64Bit ? 131072 : 2048;
 
+  std::cout << "DEBUG: Setting Protocol option" << std::endl;
   o["Protocol"]              << Option("uci", {"uci", "xboard"});
+  std::cout << "DEBUG: Setting Debug Log File option" << std::endl;
   o["Debug Log File"]        << Option("", on_logger);
+  std::cout << "DEBUG: Setting Contempt option" << std::endl;
   o["Contempt"]              << Option(21, -100, 100);
+  std::cout << "DEBUG: Setting Analysis Contempt option" << std::endl;
   o["Analysis Contempt"]     << Option("Both", {"Both", "Off", "White", "Black"});
+  std::cout << "DEBUG: Setting Threads option" << std::endl;
   o["Threads"]               << Option(1, 1, 512, on_threads);
+  std::cout << "DEBUG: Setting Hash option" << std::endl;
   o["Hash"]                  << Option(16, 1, MaxHashMB, on_hash_size);
+  std::cout << "DEBUG: Setting Clear Hash option" << std::endl;
   o["Clear Hash"]            << Option(on_clear_hash);
+  std::cout << "DEBUG: Setting Ponder option" << std::endl;
   o["Ponder"]                << Option(false);
+  std::cout << "DEBUG: Setting MultiPV option" << std::endl;
   o["MultiPV"]               << Option(1, 1, 500);
+  std::cout << "DEBUG: Setting Skill Level option" << std::endl;
   o["Skill Level"]           << Option(20, 0, 20);
+  std::cout << "DEBUG: Setting Move Overhead option" << std::endl;
   o["Move Overhead"]         << Option(30, 0, 5000);
+  std::cout << "DEBUG: Setting Minimum Thinking Time option" << std::endl;
   o["Minimum Thinking Time"] << Option(20, 0, 5000);
+  std::cout << "DEBUG: Setting Slow Mover option" << std::endl;
   o["Slow Mover"]            << Option(84, 10, 1000);
+  std::cout << "DEBUG: Setting nodestime option" << std::endl;
   o["nodestime"]             << Option(0, 0, 10000);
+  std::cout << "DEBUG: Setting UCI_Variant option" << std::endl;
   o["UCI_Variant"]           << Option("musketeer", {"musketeer"}, on_variant);
+  std::cout << "DEBUG: Setting UCI_Chess960 option" << std::endl;
   o["UCI_Chess960"]          << Option(false);
+  std::cout << "DEBUG: Setting UCI_AnalyseMode option" << std::endl;
   o["UCI_AnalyseMode"]       << Option(false);
+  std::cout << "DEBUG: Setting SyzygyPath option" << std::endl;
   o["SyzygyPath"]            << Option("<empty>", on_tb_path);
+  std::cout << "DEBUG: Setting SyzygyProbeDepth option" << std::endl;
   o["SyzygyProbeDepth"]      << Option(1, 1, 100);
+  std::cout << "DEBUG: Setting Syzygy50MoveRule option" << std::endl;
   o["Syzygy50MoveRule"]      << Option(true);
+  std::cout << "DEBUG: Setting SyzygyProbeLimit option" << std::endl;
   o["SyzygyProbeLimit"]      << Option(6, 0, 6);
+  
+  std::cout << "DEBUG: UCI::init() completed" << std::endl;
 }
 
 

@@ -40,6 +40,14 @@ using std::string;
 // Define PieceToChar string to avoid static initialization order issues
 const std::string PieceToChar = " PNBRQCLAMSDUHEFK               pnbrqclamsduhefk               ";
 
+// Debug PieceToChar initialization
+struct PieceToCharDebug {
+  PieceToCharDebug() {
+    std::cout << "DEBUG: PieceToChar initialized, length = " << PieceToChar.length() << std::endl;
+  }
+};
+PieceToCharDebug piece_debug;
+
 namespace PSQT {
   extern Score psq[PIECE_NB][SQUARE_NB];
   extern Score psq_gate[PIECE_NB][FILE_NB];

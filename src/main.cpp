@@ -32,22 +32,63 @@ namespace PSQT {
   void init();
 }
 
+// Debug static initialization
+struct StaticInitDebug {
+  StaticInitDebug() {
+    std::cout << "DEBUG: Static initialization starting" << std::endl;
+  }
+};
+StaticInitDebug static_debug;
+
 int main(int argc, char* argv[]) {
 
+  std::cout << "DEBUG: Starting main()" << std::endl;
+
+  std::cout << "DEBUG: About to call UCI::init(Options)" << std::endl;
   UCI::init(Options);
+  std::cout << "DEBUG: UCI::init(Options) completed" << std::endl;
   
+  std::cout << "DEBUG: About to call engine_info()" << std::endl;
   std::cout << engine_info() << std::endl;
+  std::cout << "DEBUG: engine_info() completed" << std::endl;
 
+  std::cout << "DEBUG: About to call PSQT::init()" << std::endl;
   PSQT::init();
+  std::cout << "DEBUG: PSQT::init() completed" << std::endl;
+  
+  std::cout << "DEBUG: About to call Bitboards::init()" << std::endl;
   Bitboards::init();
+  std::cout << "DEBUG: Bitboards::init() completed" << std::endl;
+  
+  std::cout << "DEBUG: About to call Position::init()" << std::endl;
   Position::init();
+  std::cout << "DEBUG: Position::init() completed" << std::endl;
+  
+  std::cout << "DEBUG: About to call Bitbases::init()" << std::endl;
   Bitbases::init();
+  std::cout << "DEBUG: Bitbases::init() completed" << std::endl;
+  
+  std::cout << "DEBUG: About to call Search::init()" << std::endl;
   Search::init();
+  std::cout << "DEBUG: Search::init() completed" << std::endl;
+  
+  std::cout << "DEBUG: About to call Pawns::init()" << std::endl;
   Pawns::init();
+  std::cout << "DEBUG: Pawns::init() completed" << std::endl;
+  
+  std::cout << "DEBUG: About to call Tablebases::init()" << std::endl;
   Tablebases::init(Options["SyzygyPath"]); // After Bitboards are set
+  std::cout << "DEBUG: Tablebases::init() completed" << std::endl;
+  
+  std::cout << "DEBUG: About to call Threads.set()" << std::endl;
   Threads.set(Options["Threads"]);
+  std::cout << "DEBUG: Threads.set() completed" << std::endl;
+  
+  std::cout << "DEBUG: About to call Search::clear()" << std::endl;
   Search::clear(); // After threads are up
+  std::cout << "DEBUG: Search::clear() completed" << std::endl;
 
+  std::cout << "DEBUG: About to call UCI::loop()" << std::endl;
   UCI::loop(argc, argv);
 
   Threads.set(0);
